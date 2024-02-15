@@ -35,7 +35,7 @@ set -e
 ################################################################################
 # The directory used to keep information about active (pending or running)
 # and inactive (finshed, failed) clusters. Something like /data/$USER/.spark
-soc_sparkdir=/fastscratch/karimy/SparkLogs/x # ./x
+soc_sparkdir="${SOC_SPARKDIR}" # ./x
 
 # The headnode of the cluster. Used to construct the command for setting
 # up an ssh tunnel to the spark master's web ui
@@ -508,7 +508,7 @@ module load Boost/1.76.0-GCC-10.3.0 zstd/1.4.9-GCCcore-10.3.0 CMake/3.20.1-GCCco
 
 # Set up node local scratch directories on all the nodes
 # export SCRATCH="/localscratch/${SLURM_JOB_ID}"
-export SCRATCH="/fastscratch/karimy/SparkLogs/${SLURM_JOB_ID}"  # "$(pwd)/${SLURM_JOB_ID}"
+export SCRATCH="${SPARKLOGS_DIR}/${SLURM_JOB_ID}"  # "$(pwd)/${SLURM_JOB_ID}"
 export SPARK_CONF_DIR="${SCRATCH}/conf"
 # Added By Karim
 mkdir -p $SCRATCH
@@ -570,7 +570,7 @@ ulimit -u 16384 -n 16384
 export SPARK_CONF_DIR=${SPARK_CONF_DIR}
 echo "WORKER STARTING SOON"
 logf="${SCRATCH}/logs/spark-worker-\$(hostname).out"
-exec /home/karimy/spark-2.2.0-bin-hadoop2.6/bin/spark-class org.apache.spark.deploy.worker.Worker "${master}" &> "\${logf}"
+exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.worker.Worker "${master}" &> "\${logf}"
 EOF
 
 chmod +x /tmp/sparkworker.sh
@@ -585,7 +585,7 @@ cp /tmp/sparkworker.sh "${SCRATCH}/sparkworker.sh" \
 trap 'shutdown_cluster' SIGUSR1
 
 # start master
-/home/karimy/spark-2.2.0-bin-hadoop2.6/sbin/start-master.sh \
+"${SPARK_HOME}"/sbin/start-master.sh \
     || fail "Master did not start"
 sleep 30
 
