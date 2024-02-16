@@ -35,7 +35,7 @@ set -e
 ################################################################################
 # The directory used to keep information about active (pending or running)
 # and inactive (finshed, failed) clusters. Something like /data/$USER/.spark
-soc_sparkdir="${SOC_SPARKDIR}" # ./x
+soc_sparkdir="${SPARKLOGS_DIR}/x" # ./x
 
 # The headnode of the cluster. Used to construct the command for setting
 # up an ssh tunnel to the spark master's web ui
